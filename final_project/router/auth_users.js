@@ -36,13 +36,13 @@ regd_users.post("/login", (req,res) => {
     const password = req.query.password;
 
     if (!username || !password) {
-        res.status(404).json({ message: "Error logging in" });
+        return res.status(404).json({ message: "Error logging in" });
     }
 
     if (authenticatedUser(username, password)) {
         
         let accessToken = jwt.sign({
-            data: password
+            username: username
         }, 'access', { expiresIn: 60 * 60 });
 
         req.session.authorization = {
@@ -57,8 +57,38 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const review = req.query.review.replace("-", " ");
+
+    if (!review) {
+        return res.status(404).json({ message: "Review is required."});
+    }
+
+    const username = req.session.authorization.username;
+
+    const book = books[isbn];
+
+    if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+    }
+
+    book.reviews[username] = review;
+
+    res.send(`Review added by ${username} successfully!`)
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+});
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+
+    const username = req.session.authorization.username;
+
+    if (isbn) {
+        delete books[isbn].reviews[username];
+    }
+
+    res.send(`User's review with username ${username} deleted successfully!`)
 });
 
 module.exports.authenticated = regd_users;

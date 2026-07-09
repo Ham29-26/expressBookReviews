@@ -84,9 +84,13 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
     const username = req.session.authorization.username;
 
-    if (isbn) {
-        delete books[isbn].reviews[username];
+    const book = books[isbn];
+
+    if (!book) {
+        return res.status(404).json({ message: "Book not found" });
     }
+
+    delete book.reviews[username];
 
     res.send(`User's review with username ${username} deleted successfully!`)
 });

@@ -40,90 +40,109 @@ public_users.get('/',async function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/books/isbn/:isbn',function (req, res) {
+// Source endpoint that returns book details by ISBN
+public_users.get('/books/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;
+
+    // Check if the book exists
     if (books[isbn]) {
         res.send(books[isbn]);
     } else {
-        res.send("Book with given isbn could not be found")
+        res.send("Book with given ISBN could not be found");
     }
-  //Write your code here
- });
+     //Write your code here
+});
 
-
- public_users.get('/isbn/:isbn',async function (req, res) {
+// Get book details based on ISBN
+// Retrieve book details by ISBN using Axios
+public_users.get('/isbn/:isbn', async function (req, res) {
     const isbn = req.params.isbn;
 
     try {
+        // Call the source endpoint asynchronously
         const response = await axios.get(`http://localhost:5000/books/isbn/${isbn}`);
+
+        // Return the retrieved book details
         res.send(response.data);
     } catch (error) {
         res.status(404).send("Book with given ISBN could not be found");
     }
-  //Write your code here
- });
+
+    //Write your code here
+});
   
 // Get book details based on author
-public_users.get('/books/author/:author',function (req, res) {
+// Source endpoint that returns books by author
+public_users.get('/books/author/:author', function (req, res) {
     let author = req.params.author;
     const finalAuthor = author.toLocaleLowerCase().trim().replace("-", " ");
 
+    // Convert books object into an array
     const allBooks = Object.values(books);
 
-    const matchingBooks = allBooks.filter((book) => book.author.toLocaleLowerCase().trim() === finalAuthor);
+    // Filter books matching the given author
+    const matchingBooks = allBooks.filter(
+        (book) => book.author.toLocaleLowerCase().trim() === finalAuthor
+    );
 
     res.send(matchingBooks);
-    
-  //Write your code here
+    //Write your code here
 });
 
 // Get book details based on author
-public_users.get('/author/:author',async function (req, res) {
+// Retrieve books by author using Axios
+public_users.get('/author/:author', async function (req, res) {
     const author = req.params.author;
 
     try {
+        // Call the source endpoint asynchronously
         const response = await axios.get(
             `http://localhost:5000/books/author/${author}`
         );
 
+        // Return the matching books
         res.send(response.data);
     } catch (error) {
         res.status(500).json({ message: "Error retrieving books by author" });
     }
-    
-  //Write your code here
+    //Write your code here
 });
 
 // Get all books based on title
-public_users.get('/books/title/:title',function (req, res) {
-
+// Source endpoint that returns books by title
+public_users.get('/books/title/:title', function (req, res) {
     let title = req.params.title;
     const finalTitle = title.toLocaleLowerCase().trim().replace("-", " ");
 
+    // Convert books object into an array
     const allBooks = Object.values(books);
 
-    const matchingBooks = allBooks.filter((book) => book.title.toLocaleLowerCase().trim() === finalTitle);
+    // Filter books matching the given title
+    const matchingBooks = allBooks.filter(
+        (book) => book.title.toLocaleLowerCase().trim() === finalTitle
+    );
 
     res.send(matchingBooks);
-  //Write your code here
+     //Write your code here
 });
 
 // Get all books based on title
-public_users.get('/title/:title',async function (req, res) {
-
+// Retrieve books by title using Axios
+public_users.get('/title/:title', async function (req, res) {
     const title = req.params.title;
 
     try {
+        // Call the source endpoint asynchronously
         const response = await axios.get(
             `http://localhost:5000/books/title/${title}`
         );
 
+        // Return the matching books
         res.send(response.data);
-
     } catch (error) {
         res.status(500).json({ message: "Error retrieving books by title" });
     }
-  //Write your code here
+    //Write your code here
 });
 
 //  Get book review
